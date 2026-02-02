@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="container nav-container">
+        <div class="container nav-container">
+            <div class="nav-brand">Faculty Portal</div>
+            <div class="action-row">
+                <!-- Desktop Upload Button -->
+                <button onclick="openUploadModal()" class="btn btn-primary desktop-only"
+                    style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    <i class="fas fa-plus"></i> Upload Notes
+                </button>
+
+                <!-- Desktop Icons -->
+                <a href="#" class="btn desktop-only" title="Notifications" style="color: var(--text-main);">
+                    <i class="fas fa-bell"></i>
+                </a>
+
+                <a href="#" onclick="openReminderModal()" class="btn desktop-only" title="Send Reminder"
+                    style="color: var(--text-main);">
+                    <i class="fas fa-paper-plane"></i>
+                </a>
+
+                <a href="#" onclick="openManageRemindersModal()" class="btn desktop-only" title="Manage Reminders"
+                    style="color: var(--text-main);">
+                    <i class="fas fa-list-ul"></i>
+                </a>
+
+                <button class="theme-toggle" onclick="toggleTheme()" title="Switch Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <a href="/logout" class="btn desktop-only" title="Logout"
+                    style="color: var(--danger); margin-left: 0.5rem;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+
+                <button class="hamburger" id="menuBtn"><i class="fas fa-bars"></i></button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="backdrop" id="backdrop"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div
+        style="display: flex; align-items: center; gap: 0.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+        <div
+            style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+            {{ user.name[0] }}
+        </div>
+        <div>
+            <div style="font-weight: 600;">{{ user.name }}</div>
+            <div style="font-size: 0.8rem; color: var(--secondary);">Faculty - {{ dept }}</div>
+        </div>
+    </div>
+
+    <button onclick="openUploadModal()" class="btn btn-primary"
+        style="justify-content: flex-start; width: 100%; margin: 1rem 0;">
+        <i class="fas fa-cloud-upload-alt" style="margin-right: 0.5rem;"></i> Upload Notes
+    </button>
+
+    <a href="#" class="btn" style="justify-content: flex-start;"><i class="fas fa-bell" style="width: 24px;"></i>
+        Notifications</a>
+
+    <a href="#" onclick="openReminderModal()" class="btn" style="justify-content: flex-start;"><i
+            class="fas fa-paper-plane" style="width: 24px;"></i>
+        Send Reminder</a>
+
+    <a href="#" onclick="openManageRemindersModal()" class="btn" style="justify-content: flex-start;"><i
+            class="fas fa-list-ul" style="width: 24px;"></i>
+        Manage Reminders</a>
+
+    <button onclick="toggleThemeMobile()" class="btn" style="justify-content: flex-start; width: 100%;">
+        <i class="fas fa-moon" style="width: 24px;"></i> <span>Switch Theme</span>
+    </button>
+
+    <a href="/logout" class="btn" style="justify-content: flex-start; color: var(--danger);"><i
+            class="fas fa-sign-out-alt" style="width: 24px;"></i> Logout</a>
+</div>
+
+<!-- Main Content -->
+<main class="container" style="padding-top: 2rem;">
+    <!-- Stats / Dashboard -->
+    <!-- Hero Section -->
+    <div class="hero-section fade-in">
+        <h1 class="hero-title">Welcome back, {{ user.name }}! 👋</h1>
+        <p class="hero-subtitle">You are managing <strong>{{ dept }}</strong> Department resources.</p>
+    </div>
+
+    <!-- Stats / Dashboard -->
+    <div class="grid-container fade-in" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 2rem;">
+        <div class="card stat-card">
+            <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">12</div>
+            <div style="font-size: 0.9rem; opacity: 0.8;">Notes Uploaded</div>
+        </div>
+        <div class="card stat-card">
+            <div style="font-size: 2rem; font-weight: 700; color: var(--warning);">4.8</div>
+            <div style="font-size: 0.9rem; opacity: 0.8;">Avg Rating</div>
+        </div>
+    </div>
+
+    <h3>Recent Uploads</h3>
+    <div class="grid-container" id="facultyNotesGrid">
+        <!-- Loaded via JS -->
+    </div>
+</main>
+
+<!-- Reminder Modal -->
+<div class="modal" id="reminderModal">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 1rem;">Send Reminder to Students</h3>
+        <form id="reminderForm">
+            <div class="form-group">
+                <label class="form-label">Department</label>
+                <input type="text" class="form-input" value="{{ session.dept }}" disabled>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Target Year</label>
+                <select name="year" id="reminderYear" class="form-select" required>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Message</label>
+                <textarea name="message" id="reminderMessage" class="form-input" rows="4"
+                    placeholder="Enter your message here..." required></textarea>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button type="button" onclick="closeReminderModal()" class="btn"
+                    style="background: var(--border); width: 100%;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Send</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- Reminder Modal Logic ---
+    function openReminderModal() {
+        document.getElementById('reminderModal').classList.add('active');
+    }
+
+    function closeReminderModal() {
+        document.getElementById('reminderModal').classList.remove('active');
+    }
+
+    document.getElementById('reminderForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const year = document.getElementById('reminderYear').value;
+        const message = document.getElementById('reminderMessage').value;
+        const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.innerText;
+
+        btn.innerText = "Sending...";
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/reminders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ year, message })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                showToast("Reminder sent successfully!", "success");
+                closeReminderModal();
+                e.target.reset();
+            } else {
+                showToast("Error: " + data.error, "error");
+            }
+        } catch (err) {
+            showToast("Failed to send reminder", "error");
+            console.error(err);
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    });
+
+    // Close Modals on Outside Click
+    window.onclick = function (e) {
+        if (e.target.classList.contains('modal')) {
+            e.target.classList.remove('active');
+        }
+    }
+</script>
+
+<!-- Upload Modal -->
+<div class="modal" id="uploadModal">
+    <div class="modal-content">
+        <h3 style="margin-bottom: 1rem;">Upload New Material</h3>
+        <form id="uploadForm">
+            <div class="form-group">
+                <label class="form-label">Department</label>
+                <!-- Disabled to enforce department lock -->
+                <select name="department" id="uploadDept" class="form-select" disabled>
+                    <option value="{{ session.dept }}" selected>{{ session.dept }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Year</label>
+                <select name="year" id="uploadYear" class="form-select" required>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Subject</label>
+                <select name="subject" id="uploadSubject" class="form-select" required disabled>
+                    <option value="">Select Dept & Year first</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" name="title" class="form-input" placeholder="e.g. TCP/IP Unit 1" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-input" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">YouTube Link (Optional)</label>
+                <input type="url" name="youtube_link" class="form-input" placeholder="https://youtube.com/...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">File URL (Supabase Storage)</label>
+                <input type="url" name="file_url" class="form-input" placeholder="https://supabase.../file.pdf"
+                    required>
+                <small style="color: var(--secondary);">* Upload to Storage bucket first (Mock for now)</small>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button type="button" onclick="closeUploadModal()" class="btn"
+                    style="background: var(--border); width: 100%;">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Manage Reminders Modal -->
+<div class="modal" id="manageRemindersModal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3>Manage Sent Reminders</h3>
+            <button onclick="closeManageRemindersModal()"
+                style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div id="facultyRemindersList"
+            style="display:flex; flex-direction:column; gap:0.5rem; max-height:400px; overflow-y:auto;">
+            <p>Loading...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openManageRemindersModal() {
+        document.getElementById('manageRemindersModal').classList.add('active');
+        fetchFacultyReminders(); // Defined in main.js or here
+    }
+
+    function closeManageRemindersModal() {
+        document.getElementById('manageRemindersModal').classList.remove('active');
+    }
+</script>
+
+<!-- Hidden Context -->
+<div id="portalContext" data-dept="{{ dept }}" data-role="faculty" class="hidden"></div>
+{% endblock %}

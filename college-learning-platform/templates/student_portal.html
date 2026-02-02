@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="container nav-container">
+        <div class="nav-brand">CampusIQ</div>
+
+        <div class="action-row">
+            <!-- Desktop Nav Items -->
+            <button onclick="openPersonalNotes()" class="btn desktop-only" title="My Personal Notes"
+                style="color: var(--primary);">
+                <i class="fas fa-sticky-note"></i>
+            </button>
+
+            <a href="#" onclick="openReminderModal(); return false;" id="desktopNotificationBtn"
+                class="btn desktop-only" title="Notifications" style="color: var(--text-main); position: relative;">
+                <i class="fas fa-bell"></i>
+                <span id="desktopBadge" class="badge-dot" style="display: none;"></span>
+            </a>
+
+            <button class="theme-toggle" onclick="toggleTheme()" title="Switch Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <a href="/logout" class="btn desktop-only" title="Logout"
+                style="color: var(--danger); margin-left: 0.5rem;">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+
+            <button class="hamburger" id="menuBtn"><i class="fas fa-bars"></i></button>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="backdrop" id="backdrop"></div>
+<div class="mobile-menu" id="mobileMenu">
+    <div
+        style="display: flex; align-items: center; gap: 0.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+        <div
+            style="width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+            {{ user.name[0] }}
+        </div>
+        <div>
+            <div style="font-weight: 600;">{{ user.name }}</div>
+            <div style="font-size: 0.8rem; color: var(--secondary);">{{ dept }} - Year {{ year }}</div>
+        </div>
+    </div>
+
+    
+
+    <a href="#" onclick="openReminderModal(); return false;" id="mobileNotificationBtn" class="btn"
+        style="justify-content: flex-start; position: relative;"><i class="fas fa-bell" style="width: 24px;"></i>
+        Notifications <span id="mobileBadge" class="badge-dot"
+            style="position: absolute; left: 30px; top: 10px; display: none;"></span></a>
+
+    <a href="#" class="btn" style="justify-content: flex-start;"><i class="fas fa-book" style="width: 24px;"></i>
+        Subjects</a>
+
+    <div id="mobileSubjectList"
+        style="display: flex; flex-direction: column; gap: 0.5rem; padding-left: 0.5rem; border-left: 2px solid var(--border); margin-left: 1rem;">
+        <!-- Subjects injected by JS -->
+    </div>
+
+    <button onclick="openPersonalNotes()" class="btn"
+        style="justify-content: flex-start; width: 100%; color: var(--primary);">
+        <i class="fas fa-sticky-note" style="margin-right: 0.5rem;"></i> My Personal Notes
+    </button>
+
+    <button onclick="toggleThemeMobile()" class="btn" style="justify-content: flex-start; width: 100%;">
+        <i class="fas fa-moon" style="width: 24px;"></i> <span>Switch Theme</span>
+    </button>
+
+    <a href="/logout" class="btn" style="justify-content: flex-start; color: var(--danger);"><i
+            class="fas fa-sign-out-alt" style="width: 24px;"></i> Logout</a>
+</div>
+
+<!-- Main Content -->
+<main class="container" style="padding-top: 2rem;">
+
+    <!-- Hero Section -->
+    <div class="hero-section fade-in">
+        <h1 class="hero-title">Welcome back, {{ user.name.split(' ')[0] }}! 🚀</h1>
+        <p class="hero-subtitle">You are viewing <strong>{{ dept }} - Year {{ year }}</strong> notes.</p>
+    </div>
+
+    <!-- Subject Chips -->
+    <div class="chip-container fade-in" style="animation-delay: 0.1s;">
+        <button class="chip active" onclick="filterNotes('all', this)">All Subjects</button>
+        <!-- Chips will be populated by JS or hardcoded if preferred, for now dynamic -->
+        <!-- <button class="chip" onclick="filterNotes('Math', this)">Math</button> -->
+    </div>
+
+    <!-- Search/Filter (Hidden for now, replaced by Chips) -->
+    <!-- <div class="card" style="margin-bottom: 2rem;"> ... -->
+
+    <h3>Latest Notes</h3>
+    <div class="grid-container" id="notesGrid">
+        <!-- Loaded via JS -->
+    </div>
+</main>
+
+<!-- Hidden data for JS -->
+
+<style>
+    .badge-dot {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 10px;
+        height: 10px;
+        background-color: var(--danger);
+        border-radius: 50%;
+        border: 2px solid var(--surface);
+    }
+</style>
+<!-- Reminder Modal -->
+<div class="modal" id="reminderModal">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3><i class="fas fa-bell" style="color:var(--primary);"></i> Reminders</h3>
+            <button onclick="closeReminderModal()"
+                style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div id="remindersContainer">
+            <div id="remindersList"
+                style="display:flex; flex-direction:column; gap:0.5rem; max-height:400px; overflow-y:auto;">
+                <p style="text-align:center; color:var(--secondary); padding: 1rem;">No new reminders.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openReminderModal() {
+        document.getElementById('reminderModal').classList.add('active');
+        // Reset badge or mark read could go here
+    }
+
+    function closeReminderModal() {
+        document.getElementById('reminderModal').classList.remove('active');
+    }
+</script>
+
+<div id="portalContext" data-dept="{{ dept }}" data-year="{{ year }}" data-role="student" class="hidden"></div>
+{% endblock %}
